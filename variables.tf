@@ -1,21 +1,218 @@
 # providers.tf
 variable "g_project" {
   type        = string
-  description = "GCP project"
+  description = "GCP project."
 }
 variable "g_region" { 
   type        = string
-  description = "GCP region"
+  description = "GCP region."
 }
 variable "g_credentials" {
   type        = string
   default     = null
-  description = "GCP credentials path"
+  description = "GCP credentials path."
 }
 
 # main.tf
 variable "name" {
   type        = string
-  default     = "pg-demo"
-  description = "Name to be used as part of created resources' names"
+  default     = "gke-pg-demo"
+  description = "Name to be used as part of created resources' names."
+}
+
+# network
+variable network_tier {
+  type        = string
+  default     = "STANDARD"
+  description = "GCP network service tier (PREMIUM | STANDARD)."
+}
+
+variable gke_subnet_primary_range {
+  type = string
+  default = "10.0.0.0/24"
+  description = "Primary IP Range for cluster subnet."  
+}
+variable gke_subnet_pod_range {
+  type = string
+  default = "10.48.0.0/14"
+  description = "Secondary IP Range for cluster pods."  
+}
+variable gke_subnet_svc_range {
+  type = string
+  default = "10.52.0.0/20"
+  description = "Secondary IP Range for cluster services."  
+}
+
+# gke cluster
+variable gke_cluster_description {
+  type        = string
+  default     = ""
+  description = "Cluster description."
+}
+variable gke_is_private_cluster {
+  type        = bool
+  default     = true
+  description = "Whether to deploy worker nodes without external IPs."
+}
+
+variable gke_is_zonal_cluster {
+  type        = bool
+  default     = true
+  description = "Whether to create a zonal cluster."
+}
+variable gke_cluster_zone {
+  type        = string
+  description = "Zone for zonal cluster, ignored if 'is_zonal_cluster' variable is set to 'false'."
+}
+variable gke_cluster_master_cidr {
+  type        = string
+  default     = "176.16.0.0/28"
+  description = "The IP range in CIDR notation to use for the hosted master network."
+}
+
+variable gke_enable_logging_service {
+  type        = bool
+  default     = false
+  description = "Whether to enable managed logging service."
+}
+variable gke_enable_monitoring_service {
+  type        = bool
+  default     = false
+  description = "Whether to enable managed monitoring service."
+}
+variable gke_enable_managed_prometheus {
+  type        = bool
+  default     = false
+  description = "Whether to enable managed prometheus service."
+}
+variable gke_release_channel {
+  type        = string
+  default     = "REGULAR"
+  description = "Release channel for control plane kubernetes version (UNSPECIFIED | RAPID | REGULAR | STABLE)."
+}
+
+variable gke_node_count {
+  type        = number
+  default     = 1
+  description = "Number of nodes in cluster node group."
+}
+variable gke_node_group_machine_type {
+  type        = string
+  default     = "e2-small"
+  description = "Machine type for node group."
+}
+variable gke_node_group_auto_repair {
+  type        = bool
+  default     = true
+  description = "Whether to auto repair nodes in the node group."
+}
+variable gke_node_group_auto_upgrade {
+  type        = bool
+  default     = true
+  description = "Whether to auto upgrade nodes in the node group."
+}
+
+# pg
+variable pg_psa_address {
+  type = string
+  default = ""
+  description = "First IP address of the IP range to allocate to CLoud SQL instances and other Private Service Access services. If not set, GCP will pick a valid one for you."
+}
+variable pg_psa_prefix_length {
+  type = number
+  default = 16
+  description = "Prefix length of the IP range reserved for Cloud SQL instances and other Private Service Access services. Defaults to /16."
+}
+
+variable pg_database_version {
+  type = string
+  default = "POSTGRES_15"
+  description = "The database version to use."
+}
+variable pg_is_enterprise_plus {
+  type = bool
+  default = false
+  description = "Whether to use ENTERPRISE_PLUS (true) edition or just ENTERPRISE (false)."
+}
+variable pg_is_zonal {
+  type = bool
+  default = true
+  description = "The availability type for the master instance - ZONAL (true) or REGIONAL (false)."
+}
+variable pg_zone {
+  type = string
+  default = null
+  description = "Explicitly set the zone of the master instance."
+}
+variable pg_secondary_zone {
+  type = string
+  default = null
+  description = "Explicitly set the zone for the secondary/failover instance (only for non-zonal)."
+}
+variable pg_tier {
+  type = string
+  default = "db-f1-micro"
+  description = "The tier for the master instance."
+}
+variable pg_disk_type {
+  type = string
+  default = "PD_SSD"
+  description = "The disk type for the master instance."
+}
+variable pg_disk_size {
+  type = number
+  default = 10
+  description = "The disk size for the master instance."
+}
+variable pg_deletion_protection_enabled {
+  type = bool
+  default = false
+  description = "Whether to enable deletion protection for instance accross all surfaces."
+}
+
+variable pg_enable_default_db {
+  type = bool
+  default = true
+  description = "Whether to create the default database upon creation."
+}
+variable pg_enable_default_user {
+  type = bool
+  default = true
+  description = "Whether to create the default user upon creation."
+}
+
+variable pg_db_name {
+  type = string
+  default = "default"
+  description = "Default database name."
+}
+variable pg_user_name {
+  type = string
+  default = "default"
+  description = "Default user name"
+}
+variable pg_user_password {
+  type = string
+  default = ""
+  sensitive = true
+  description = "The password for the default user. If not set, a random one will be generated and available in the generated_user_password output variable."
+}
+variable pg_root_password {
+  type = string
+  default = null
+  sensitive = true
+  description = "Initial root password during creation."
+}
+variable pg_ipv4_enabled {
+  type = bool
+  default = true
+  description = "Whether this Cloud SQL instance should be assigned a public IPV4 address."
+}
+variable pg_authorized_networks {
+  type = list(object({
+    name = string
+    value = string
+  }))
+  default = []
+  description = "List of authorized networks when enabling ipv4. Each object must contain a name and a value for the authorized ip_range."
 }
