@@ -1,10 +1,3 @@
-locals {
-  vpc_name = "${var.name}-vpc"
-  router_name = "${var.name}-router"
-  nat_name = "${var.name}-nat"
-  gke_subnet_name = "${var.name}-gke-subnet"
-}
-
 resource "google_compute_project_default_network_tier" "default" {
   network_tier = var.network_tier
 }
@@ -29,11 +22,11 @@ module "vpc" {
     secondary_ranges = {
       "${local.gke_subnet_name}" = [
         {
-          range_name    = var.gke_subnet_pod_range_name
+          range_name    = local.gke_subnet_pod_range_name
           ip_cidr_range = var.gke_subnet_pod_range
         },
         {
-          range_name    = var.gke_subnet_svc_range_name
+          range_name    = local.gke_subnet_svc_range_name
           ip_cidr_range = var.gke_subnet_svc_range
         }
       ]

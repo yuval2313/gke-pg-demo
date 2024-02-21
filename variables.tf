@@ -1,26 +1,25 @@
-# providers.tf
-variable "g_project" {
-  type        = string
-  description = "GCP project."
-}
-variable "g_region" { 
-  type        = string
-  description = "GCP region."
-}
-variable "g_credentials" {
-  type        = string
-  default     = null
-  description = "GCP credentials path."
-}
-
-# main.tf
-variable "name" {
+variable name {
   type        = string
   default     = "gke-pg-demo"
   description = "Name to be used as part of created resources' names."
 }
 
-# network
+# providers.tf
+variable g_project {
+  type        = string
+  description = "GCP project."
+}
+variable g_region { 
+  type        = string
+  description = "GCP region."
+}
+variable g_credentials {
+  type        = string
+  default     = null
+  description = "GCP credentials path."
+}
+
+# network.tf
 variable network_tier {
   type        = string
   default     = "STANDARD"
@@ -43,31 +42,32 @@ variable gke_subnet_svc_range {
   description = "Secondary IP Range for cluster services."  
 }
 
-# gke cluster
-variable gke_cluster_description {
-  type        = string
-  default     = ""
-  description = "Cluster description."
-}
-variable gke_is_private_cluster {
-  type        = bool
-  default     = true
-  description = "Whether to deploy worker nodes without external IPs."
+# gke.tf
+variable gke_deletion_protection {
+  type = bool
+  default = true
+  description = "Enable deletion protection on GKE cluster."
 }
 
-variable gke_is_zonal_cluster {
+variable gke_is_regional_cluster {
   type        = bool
-  default     = true
-  description = "Whether to create a zonal cluster."
+  default     = false
+  description = "Whether to create a regional cluster."
 }
-variable gke_cluster_zone {
-  type        = string
-  description = "Zone for zonal cluster, ignored if 'is_zonal_cluster' variable is set to 'false'."
+variable gke_cluster_zones {
+  type        = list(string)
+  description = "Zones for zonal cluster, ignored for regional clusters."
 }
 variable gke_cluster_master_cidr {
   type        = string
   default     = "176.16.0.0/28"
   description = "The IP range in CIDR notation to use for the hosted master network."
+}
+
+variable gke_enable_private_nodes {
+  type = bool
+  default = true
+  description = "Whether to provision nodes with only private ips"
 }
 
 variable gke_enable_logging_service {
@@ -85,11 +85,6 @@ variable gke_enable_managed_prometheus {
   default     = false
   description = "Whether to enable managed prometheus service."
 }
-variable gke_release_channel {
-  type        = string
-  default     = "REGULAR"
-  description = "Release channel for control plane kubernetes version (UNSPECIFIED | RAPID | REGULAR | STABLE)."
-}
 
 variable gke_node_count {
   type        = number
@@ -101,18 +96,18 @@ variable gke_node_group_machine_type {
   default     = "e2-small"
   description = "Machine type for node group."
 }
-variable gke_node_group_auto_repair {
-  type        = bool
-  default     = true
-  description = "Whether to auto repair nodes in the node group."
+variable gke_node_group_disk_type {
+  type = string
+  default = "pd-ssd"
+  description = "Persistent disk type attached to each node in node group."
 }
-variable gke_node_group_auto_upgrade {
-  type        = bool
-  default     = true
-  description = "Whether to auto upgrade nodes in the node group."
+variable gke_node_group_disk_size {
+  type = number
+  default = 30
+  description = "Persistent disk size attached to each node in node group."
 }
 
-# pg
+# pg.tf
 variable pg_psa_address {
   type = string
   default = ""
@@ -152,7 +147,7 @@ variable pg_secondary_zone {
 variable pg_tier {
   type = string
   default = "db-f1-micro"
-  description = "The tier for the master instance."
+  description = "The tier for the master instance - https://cloud.google.com/sdk/gcloud/reference/sql/tiers/list."
 }
 variable pg_disk_type {
   type = string
@@ -168,17 +163,6 @@ variable pg_deletion_protection_enabled {
   type = bool
   default = false
   description = "Whether to enable deletion protection for instance accross all surfaces."
-}
-
-variable pg_enable_default_db {
-  type = bool
-  default = true
-  description = "Whether to create the default database upon creation."
-}
-variable pg_enable_default_user {
-  type = bool
-  default = true
-  description = "Whether to create the default user upon creation."
 }
 
 variable pg_db_name {
@@ -215,4 +199,19 @@ variable pg_authorized_networks {
   }))
   default = []
   description = "List of authorized networks when enabling ipv4. Each object must contain a name and a value for the authorized ip_range."
+}
+variable pg_database_flags {
+  type = list(object({
+    name = string
+    value = any
+  }))
+  default = []
+  description = "The database flags for the master instance. See https://cloud.google.com/sql/docs/postgres/flags"
+}
+
+# k8s.tf
+variable "k8s_namespace" {
+  type = string
+  default = "app"
+  description = "Namespace to create in cluster, in which database credentials are stored"
 }
