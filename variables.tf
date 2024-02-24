@@ -1,9 +1,3 @@
-variable name {
-  type        = string
-  default     = "gke-pg-demo"
-  description = "Name to be used as part of created resources' names."
-}
-
 # providers.tf
 variable g_project {
   type        = string
@@ -17,6 +11,15 @@ variable g_credentials {
   type        = string
   default     = null
   description = "GCP credentials path."
+}
+
+variable environment {
+  type = string
+  validation {
+    condition = var.environment == "dev" || var.environment == "stage" || var.environment == "prod"
+    error_message = "Value must be set to 'dev' | 'stage' | 'prod'"
+  }
+  description = "Infrastructure environment."
 }
 
 # network.tf
@@ -45,7 +48,7 @@ variable gke_subnet_svc_range {
 # gke.tf
 variable gke_deletion_protection {
   type = bool
-  default = true
+  default = false
   description = "Enable deletion protection on GKE cluster."
 }
 

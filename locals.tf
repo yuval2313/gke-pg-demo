@@ -1,17 +1,17 @@
 locals {
-  prefixed_name = "${terraform.workspace}-${var.name}"
+  name = "${terraform.workspace}-${var.environment}"
 
-  vpc_name = "${local.prefixed_name}-vpc"
-  router_name = "${local.prefixed_name}-router"
-  nat_name = "${local.prefixed_name}-nat"
+  vpc_name = "${local.name}-vpc"
+  router_name = "${local.name}-router"
+  nat_name = "${local.name}-nat"
   
-  gke_subnet_name = "${local.prefixed_name}-gke-subnet"
+  gke_subnet_name = "${local.name}-gke-subnet"
   gke_subnet_pod_range_name = "gke-pod-range"
   gke_subnet_svc_range_name = "gke-svc-range"
-  gke_cluster_name = "${local.prefixed_name}-cluster"
+  gke_cluster_name = "${local.name}-cluster"
   gke_node_group_name = "${local.gke_cluster_name}-ng"
 
-  pg_instance_name = "${local.prefixed_name}-pg-instance"
+  pg_instance_name = "${local.name}-pg-instance"
 
   api_services = [
     "networkconnectivity.googleapis.com", 
@@ -30,4 +30,14 @@ locals {
     "roles/autoscaling.metricsWriter",
     "roles/artifactregistry.reader"
   ]
+
+  network_tier = var.environment == "dev" ? var.network_tier : "PREMIUM"
+  gke_deletion_protection = var.environment == "dev" ? var.gke_deletion_protection : true
+  gke_enable_private_nodes = var.environment == "dev" ? var.gke_enable_private_nodes : true
+  gke_enable_logging_service = var.environment == "dev" ? var.gke_enable_logging_service : true
+  gke_enable_monitoring_service = var.environment == "dev" ? var.gke_enable_monitoring_service : true
+  gke_enable_managed_prometheus = var.environment == "dev" ? var.gke_enable_managed_prometheus : true
+  pg_database_version = var.environment == "dev" ? var.pg_database_version : "POSTGRES_15"
+  pg_is_zonal = var.environment == "dev" ? var.pg_is_zonal : false
+  pg_deletion_protection_enabled = var.environment == "dev" ? var.pg_deletion_protection_enabled : true
 }
