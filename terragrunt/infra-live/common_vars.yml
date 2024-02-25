@@ -1,0 +1,61 @@
+google_provider:
+  g_project: "lyuval-playground"
+  g_region: "europe-north1"
+  g_credentials: null
+
+gke:
+  gke_cluster_master_cidr: "176.16.0.0/28"
+  gke_subnet_primary_range: "10.0.0.0/24"
+  gke_subnet_pod_range: "10.48.0.0/14"
+  gke_subnet_svc_range: "10.52.0.0/20"
+  gke_cluster_zones: ["europe-north1-a"]
+  gke_node_group_disk_type: "pd-ssd"
+
+pg:
+  pg_psa_address: "10.240.0.0"
+  pg_psa_prefix_length: 16
+  pg_database_version: "POSTGRES_15"
+  pg_zone: "europe-north1-b"
+  pg_disk_type: "PD-SSD"
+  pg_db_name: "dbname"
+  pg_user_name: "dbuser"
+  # FIXME: Implement a secure manner for working with sensitive values
+  pg_user_password: "dbpass"
+  pg_root_password: "pgadmin"
+  pg_database_flags:
+    - name: "track_activity_query_size"
+      value: 4096
+    - name: "pg_stat_statements.track"
+      value: "all"
+    - name: "pg_stat_statements.max"
+      value: 10000
+    - name: "pg_stat_statements.track_utility"
+      value: "off"
+    - name: "track_io_timing"
+      value: "on"
+
+k8s:
+  k8s_namespace: "app"
+
+  # pg_database_flags: [
+  #     {
+  #       name = "track_activity_query_size"
+  #       value = 4096,
+  #     },
+  #     {
+  #       name = "pg_stat_statements.track"
+  #       value = "all",
+  #     },
+  #     {
+  #       name = "pg_stat_statements.max"
+  #       value = 10000,
+  #     },
+  #     {
+  #       name = "pg_stat_statements.track_utility"
+  #       value = "off",
+  #     },
+  #     {
+  #       name = "track_io_timing"
+  #       value = "on",
+  #     },
+  #   ]
