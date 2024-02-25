@@ -22,7 +22,6 @@ gke_node_group_disk_size = 10
 pg_psa_address = "10.240.0.0"
 pg_psa_prefix_length = 16
 pg_database_version = "POSTGRES_15"
-pg_is_enterprise_plus = false
 pg_is_zonal = true
 pg_zone = "europe-north1-b"
 pg_secondary_zone = null
