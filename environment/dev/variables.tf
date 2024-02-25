@@ -13,22 +13,7 @@ variable g_credentials {
   description = "GCP credentials path."
 }
 
-variable environment {
-  type = string
-  validation {
-    condition = var.environment == "dev" || var.environment == "stage" || var.environment == "prod"
-    error_message = "Value must be set to 'dev' | 'stage' | 'prod'"
-  }
-  description = "Infrastructure environment."
-}
-
 # network.tf
-variable network_tier {
-  type        = string
-  default     = "STANDARD"
-  description = "GCP network service tier (PREMIUM | STANDARD)."
-}
-
 variable gke_subnet_primary_range {
   type = string
   default = "10.0.0.0/24"
@@ -46,17 +31,6 @@ variable gke_subnet_svc_range {
 }
 
 # gke.tf
-variable gke_deletion_protection {
-  type = bool
-  default = false
-  description = "Enable deletion protection on GKE cluster."
-}
-
-variable gke_is_regional_cluster {
-  type        = bool
-  default     = false
-  description = "Whether to create a regional cluster."
-}
 variable gke_cluster_zones {
   type        = list(string)
   description = "Zones for zonal cluster, ignored for regional clusters."
@@ -71,22 +45,6 @@ variable gke_enable_private_nodes {
   type = bool
   default = true
   description = "Whether to provision nodes with only private ips"
-}
-
-variable gke_enable_logging_service {
-  type        = bool
-  default     = false
-  description = "Whether to enable managed logging service."
-}
-variable gke_enable_monitoring_service {
-  type        = bool
-  default     = false
-  description = "Whether to enable managed monitoring service."
-}
-variable gke_enable_managed_prometheus {
-  type        = bool
-  default     = false
-  description = "Whether to enable managed prometheus service."
 }
 
 variable gke_node_count {
@@ -127,25 +85,10 @@ variable pg_database_version {
   default = "POSTGRES_15"
   description = "The database version to use."
 }
-variable pg_is_enterprise_plus {
-  type = bool
-  default = false
-  description = "Whether to use ENTERPRISE_PLUS (true) edition or just ENTERPRISE (false)."
-}
-variable pg_is_zonal {
-  type = bool
-  default = true
-  description = "The availability type for the master instance - ZONAL (true) or REGIONAL (false)."
-}
 variable pg_zone {
   type = string
   default = null
   description = "Explicitly set the zone of the master instance."
-}
-variable pg_secondary_zone {
-  type = string
-  default = null
-  description = "Explicitly set the zone for the secondary/failover instance (only for non-zonal)."
 }
 variable pg_tier {
   type = string
@@ -161,11 +104,6 @@ variable pg_disk_size {
   type = number
   default = 10
   description = "The disk size for the master instance."
-}
-variable pg_deletion_protection_enabled {
-  type = bool
-  default = false
-  description = "Whether to enable deletion protection for instance accross all surfaces."
 }
 
 variable pg_db_name {
