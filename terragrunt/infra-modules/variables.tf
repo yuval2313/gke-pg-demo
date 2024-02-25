@@ -1,4 +1,14 @@
-# providers.tf
+# environment
+variable environment {
+  type = string
+  default = "dev"
+  validation {
+    condition = var.environment == "dev" || var.environment == "stage" || var.environment == "prod"
+    error_message = "Accepted values are 'dev' / 'stage' / 'prod'."
+  }
+}
+
+# providers
 variable g_project {
   type        = string
   description = "GCP project."
@@ -13,7 +23,7 @@ variable g_credentials {
   description = "GCP credentials path."
 }
 
-# network.tf
+# network
 variable network_tier {
   type = string
   default = "STANDARD"
@@ -48,7 +58,7 @@ variable pg_psa_prefix_length {
 }
 
 
-# gke.tf
+# gke
 variable gke_deletion_protection {
   type = bool
   default = true
@@ -112,7 +122,7 @@ variable gke_node_group_disk_size {
   description = "Persistent disk size attached to each node in node group."
 }
 
-# pg.tf
+# pg
 variable pg_is_zonal {
   type = bool
   default = true
@@ -199,8 +209,8 @@ variable pg_database_flags {
   description = "The database flags for the master instance. See https://cloud.google.com/sql/docs/postgres/flags"
 }
 
-# k8s.tf
-variable "k8s_namespace" {
+# k8s
+variable k8s_namespace {
   type = string
   default = "app"
   description = "Namespace to create in cluster, in which database credentials are stored"
